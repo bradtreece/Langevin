@@ -1,0 +1,4 @@
+mpic++ -c Random_Numbers.cpp -o Random_Numbers.o;
+mpic++ -c stats_and_histogram.cpp -o stats_and_histogram.o;
+mpic++ -c brownian_particle.cpp -o brownian_particle.o;
+
