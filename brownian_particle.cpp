@@ -28,7 +28,8 @@ void brownian_particle::calculate_trajectory(double variance_of_r)
         for (int j=0; j<tau; j++)
         {
             atmp = ( -friction*vtmp + F*p[j] ) / m;
-            xtmp += vtmp*dt + 0.5*atmp*dt*dt;
+            //xtmp += vtmp*dt + 0.5*atmp*dt*dt;
+	    xtmp += vtmp*dt;
             vtmp += atmp*dt;
             ftmp = F*p[j];
         }

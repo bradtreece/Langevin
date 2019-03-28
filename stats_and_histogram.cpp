@@ -6,56 +6,6 @@
 #include "Random_Numbers.h"
 #include "stats_and_histogram.h"
 
-void run_mean_and_mean_square(double *x, double *xbar, double *x2bar, int num_steps)
-{
-    double sum;
-    xbar[0] = x[0];
-    x2bar[0] = 0;
-    for (int i=1; i < num_steps; i++)
-    {
-        // mean
-        xbar[i] = (i*xbar[i-1] + x[i]) / (i+1) ;
-        // mean square
-        sum = 0.0;
-        for (int j=0; j <= i; j++)
-        {
-            sum += pow(x[j] - xbar[i], 2.0);
-        }
-        x2bar[i] = sum / (i+1);
-    }
-    return;
-}
-
-void run_mean_square(double *obs, double *x2bar, int num_steps)
-{
-    double sum, xbar[num_steps];
-    xbar[0] = obs[0];
-    x2bar[0] = 0;
-    for (int i=1; i < num_steps; i++)
-    {
-        // mean
-        xbar[i] = (i*xbar[i-1] + obs[i]) / (i+1) ;
-        // mean squared
-        sum = 0.0;
-        for (int j=0; j <= i; j++)
-        {
-            sum += pow(obs[j] - xbar[i], 2.0);
-        }
-        x2bar[i] = sum / (i+1);
-    }
-    return;
-}
-
-void mean_square_displacement_from_reference(double *x, double *x2bar, int num_steps, double reference)
-{
-    x2bar[0] = pow(x[0] - reference, 2.0);
-    for (int i=1; i<num_steps; i++)
-    {
-        x2bar[i] = (i*x2bar[i-1] + pow(x[i] - reference, 2.0)) / (i+1);
-    }
-    return;
-}
-
 void histogram::init(double *observable, int samples, int bins)
 {
     // bin_edges

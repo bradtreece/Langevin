@@ -39,7 +39,7 @@ int main ( int argc, char *argv[] )
   brownian_particle b = brownian_particle(nsteps, dt, eta, kT, m, 0.0, 0.0, dT_out);
 
   // Brownian Statistics
-  int nrepeats = 1000000
+  int nrepeats = 50000000
   , nrepeats_local = 1
   , nrepeats_0 = 1;
 
@@ -52,7 +52,7 @@ int main ( int argc, char *argv[] )
   double stats_received[nsteps];
 
   // File Writing
-  char fname[] = "/home/btreece/Programs/BASIC_MPI/OUTPUT.txt";
+  char fname[] = "/home/btreece/Programs/BASIC_MPI/OUTPUT_50000000.txt";
   FILE *fp;
 
 //-------------------//
@@ -76,10 +76,13 @@ int main ( int argc, char *argv[] )
   if ( id == 0 )
   {
     timestamp ( );
-    srand(time(0));
     nrepeats_local = (int) nrepeats / p;
     nrepeats_0 = nrepeats - (p-1)*nrepeats_local;
   }
+
+//  Set random seeds and check them
+  srand(time(0)+id);
+  printf("Node Id %i, Random Number %.4f\n", id, rand_uniform_0_1());
 
 //  The master process broadcasts the work load 
 //  to all the other processes.

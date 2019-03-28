@@ -1,10 +1,3 @@
-void run_mean_and_mean_square(double *x, double *xbar, double *x2bar, int num_steps);
-
-void run_mean_square(double *x, double *x2bar, int num_steps);
-
-void mean_square_displacement_from_reference(double *x, double *x2bar, int num_steps, double reference);
-
-
 #ifndef STATS_AND_HISTOGRAM_H
 #define STATS_AND_HISTOGRAM_H
 class histogram {

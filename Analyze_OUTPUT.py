@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 workingdir = "/home/btreece/Programs/BASIC_MPI/"
 
-filer = open(workingdir + "OUTPUT.txt")
+filer = open(workingdir + "OUTPUT_50000000.txt")
 lines = filer.readlines()
 filer.close()
 
