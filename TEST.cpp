@@ -4,31 +4,25 @@
 
 int main()
 {
-    double param, fractpart, intpart;
+    double param;
 
     param = 3.14159265;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     param = 4.73;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     param = 2.50;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     param = -1.5;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     param = -0.2;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     param = -2.8;
-    fractpart = modf (param , &intpart);
-    printf ("%f = %f + %f \n", param, intpart, fractpart);
+    printf ("%f = %i \n", param, (int) floor( param ) );
 
     return 0;
 }

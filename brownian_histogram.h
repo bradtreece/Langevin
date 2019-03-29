@@ -1,37 +1,36 @@
+#include <vector>
 #ifndef BROWNIAN_HISTOGRAM_H
 #define BROWNIAN_HISTOGRAM_H
-#include <vector>
 class brownian_histogram {
 public:
-    int bin_edges;
+    int bins;
     int constructor_samples;
     double bin_width;
-    std::vector<double> x;
+    double xmin;
     std::vector<int> f;
     brownian_histogram(double min_x, double max_x, int num_bins, bool add_padding = false)
-    : constructor_samples(0)
-    , bin_edges(num_bins+1)
+    : bins(num_bins+1)
+    , constructor_samples(0)
     , bin_width( (max_x - min_x)/num_bins )
+    , xmin(min_x)
     {
 //        double bin_width = ( max_x - min_x ) / num_bins;
-        double x0 = min_x;
         if (add_padding)
         {
             // Add 4 bins (2 left, 2 right)
-            bin_edges += 4;
-            x0 -= 2*bin_width;
+            bins += 4;
+            xmin -= 2*bin_width;
         }
-        
-        x.assign(bin_edges, 0.0);
-        f.assign(bin_edges, 0.0);
-
-        for (int i=0; i<bin_edges; i++)
-        { x.at(i) = x0 + i*bin_width; }
+        f.assign(bins, 0);
     }
 
     ~brownian_histogram(){}
     
+    int get_index_of_observation(double observation);
+    void extend_histogram_left(int num_bins_to_add);
+    void extend_histogram_right(int num_bins_to_add);
     void increment_single_observation(double observation);
+    void double_bin_width();
     // void init(double *observable, int samples, int bins = 0);
     // void extend_histogram_left(int numbins);
     // void extend_histogram_right(int numbins);
