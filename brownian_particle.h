@@ -1,4 +1,5 @@
-#include "stats_and_histogram.h"
+#include "histogram.h"
+#include <vector>
 #include <math.h>
 #include <stdio.h>
 
@@ -59,9 +60,8 @@ public:
     : brownian_particle(num_steps, dt, friction, kT, m, 0.0, 0.0, dt) {}
 
     void calculate_trajectory(double variance_of_r = NAN);
-    void repeat_trajectory_to_init_xsquared_histogram(int number_of_repeats, histogram *h);
-    void repeat_trajectory_to_update_xsquared_histogram(int number_of_repeats, histogram *h);
     double kT(){return 0.5*F*F*dT_out/friction;}
+    double D(){return kT()/friction;}
     ~brownian_particle(){};
 };
 
@@ -108,4 +108,41 @@ public:
     void print_data_to_file(FILE *fp);
 
     ~brownian_averages(){};//{printf("BYE!\n");}
+};
+
+class brownian_histogram {
+private:
+    brownian_particle b;
+public:
+    std::vector<int> indices;
+    std::vector<histogram> x_h;
+    std::vector<histogram> x2_h;
+    std::vector<histogram> v_h;
+    std::vector<histogram> v2_h;
+    std::vector<histogram> xv_h;
+
+    brownian_histogram(brownian_particle b, std::vector<int> indices, stat_list s)
+    : b{b}
+    , indices{indices}
+    {
+        double t;
+        //hist = std::vector<brownian_histogram> (indices.size(), brownian_histogram())
+        for (std::vector<int>::iterator it = indices.begin(); it != indices.end(); ++it)
+        {
+            t = b.dT_out * (*it) + b.dt; // b.dt is to prevent xmin == xmax
+            if ( e_x & s )
+            { x_h.push_back(histogram(-3.0*b.D()*t, 3.0*b.D()*t, 100)); }
+            if ( e_x2 & s ) {printf("\nx squared is not supported yet.\n");}
+            if ( e_v & s )
+            { v_h.push_back(histogram(-3.0*b.kT()/b.m, 3.0*b.kT()/b.m, 100)); }
+            if ( e_v2 & s ) {printf("\nv squared is not supported yet.\n");}
+            if ( e_xv & s ) {printf("\nxv is not supported yet.\n");}
+        }
+    }
+
+    void add_samples(int number_of_samples, double variance_of_r);
+
+    void print_data_to_file(FILE *fp);
+
+    ~brownian_histogram(){};
 };

@@ -1,28 +1,39 @@
-# include "brownian_histogram.h"
+# include "brownian_particle.h"
+# include "histogram.h"
 # include <stdio.h>
 # include <math.h>
+# include <vector>
 
 int main()
 {
-    double param;
 
-    param = 3.14159265;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+    std::vector<int> indices;
+    for (int i=100; i<1001; i+=100)
+    {
+        indices.push_back(i);
+    }
 
-    param = 4.73;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+    FILE *fp;
+    fp = fopen("/home/btreece/Programs/BASIC_MPI/OUT.txt","w");
 
-    param = 2.50;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+    stat_list s_l = e_x | e_v;
 
-    param = -1.5;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+    brownian_particle b = brownian_particle(1001, 0.001, 1.0, 1.0, 1.0, 0.0, 0.0, 0.001);
+    brownian_histogram h = brownian_histogram(b, indices, s_l);
 
-    param = -0.2;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+    h.add_samples(10000000, 1.0);
+//    h.add_samples(1000, 1.0);
+    h.print_data_to_file(fp);
+    fclose(fp);
 
-    param = -2.8;
-    printf ("%f = %i \n", param, (int) floor( param ) );
+/*
+    histogram h = histogram(0.0, 1.0, 10);
+    printf("xmin\tb_w\tbins\tc_s\n");
+    printf("%.3e\t%.3e\t%i\t%i\n\n", h.xmin, h.bin_width, h.bins, h.constructor_samples);
 
+    h.increment_single_observation(1.05);
+    printf("xmin\tb_w\tbins\tc_s\n");
+    printf("%.3e\t%.3e\t%i\t%i\n\n", h.xmin, h.bin_width, h.bins, h.constructor_samples);
+*/
     return 0;
 }

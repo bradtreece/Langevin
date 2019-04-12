@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Random_Numbers.h"
 #include "brownian_particle.h"
-#include "stats_and_histogram.h"
+#include "histogram.h"
 
 void brownian_particle::calculate_trajectory(double variance_of_r)
 {
@@ -29,7 +29,7 @@ void brownian_particle::calculate_trajectory(double variance_of_r)
         {
             atmp = ( -friction*vtmp + F*p[j] ) / m;
             //xtmp += vtmp*dt + 0.5*atmp*dt*dt;
-	    xtmp += vtmp*dt;
+	        xtmp += vtmp*dt;
             vtmp += atmp*dt;
             ftmp = F*p[j];
         }
@@ -40,51 +40,6 @@ void brownian_particle::calculate_trajectory(double variance_of_r)
     return;
 }
 
-void brownian_particle::repeat_trajectory_to_init_xsquared_histogram(int number_of_repeats, histogram *h)
-{
-    double set_of_x2m[number_of_repeats][num_steps];
-    double observable[number_of_repeats];
-
-
-    for (int i=0; i < number_of_repeats; i++)
-    {
-        calculate_trajectory();
-        mean_square_displacement_from_reference(x, set_of_x2m[i], num_steps, x[0]);
-    }
-    for (int i=0; i<num_steps; i++)
-    {
-        for (int j=0; j < number_of_repeats; j++)
-        {observable[j]=set_of_x2m[j][i];}
-
-
-        h[i].init(observable, number_of_repeats);
-    }
-    return;
-}
-
-void brownian_particle::repeat_trajectory_to_update_xsquared_histogram(int number_of_repeats, histogram *h)
-{
-    double set_of_x2m[number_of_repeats][num_steps];
-    double observable[number_of_repeats];
-    int i;
-
-    for (i=0; i < number_of_repeats; i++)
-    {
-        calculate_trajectory();
-        mean_square_displacement_from_reference(x, set_of_x2m[i], num_steps, x[0]);
-    }
-
-    for (i=0; i<num_steps; i++)
-    {
-        for (int j=0; j < number_of_repeats; j++)
-        {observable[j]=set_of_x2m[j][i];}
-
-        h[i].add_observations(observable, number_of_repeats);
-
-    }
-
-    return;
-}
 
 
 void brownian_averages::add_samples(int number_of_samples, double variance_of_r)
@@ -105,7 +60,7 @@ void brownian_averages::add_samples(int number_of_samples, double variance_of_r)
             { v2bar[j] = ( v2bar[j]*(num_samples-1) + b.v[j]*b.v[j] ) / num_samples; }
             if (xvbar)
             { xvbar[j] = ( xvbar[j]*(num_samples-1) + b.x[j]*b.v[j] ) / num_samples; }
-	}
+	    }
     }
     return;
 }
@@ -150,5 +105,93 @@ void brownian_averages::print_data_to_file(FILE *fp)
         { fprintf(fp, "\t%.4e", xvbar[i]);}
         fprintf(fp,"\n");
     }
+    return;
+}
+
+void brownian_histogram::add_samples(int number_of_samples, double variance_of_r)
+{   
+    // This is not the fastest way to do it
+    std::vector<int>::iterator it_i;
+    std::vector<histogram>::iterator it_h;
+    for (int i = 0; i < number_of_samples; i++)
+    {
+        //if (i == 1) {printf("Made It\n");}
+        b.calculate_trajectory(variance_of_r);
+
+        if (!x_h.empty())
+        {
+            it_h = x_h.begin();
+            for (it_i = indices.begin(); it_i != indices.end(); it_i++)
+            {
+                (*it_h).increment_single_observation(b.x[*it_i]);
+                if ( (*it_h).bins > 1000 ) { (*it_h).triple_bin_width(); }
+                it_h++;
+            }
+        }
+        if (!x2_h.empty())
+        {  }
+        if (!v_h.empty())
+        {
+            it_h = v_h.begin();
+            for (it_i = indices.begin(); it_i != indices.end(); it_i++)
+            {
+                (*it_h).increment_single_observation(b.v[*it_i]);
+                if ( (*it_h).bins > 1000 ) { (*it_h).triple_bin_width(); }
+                it_h++;
+            }
+        }
+        if (!v2_h.empty())
+        {  }
+        if (!xv_h.empty())
+        {  }
+    }
+    return;
+}
+
+void brownian_histogram::print_data_to_file(FILE *fp)
+{
+    fprintf(fp, "NEW_RUN\tdt\tdT_out\tm\teta\tkT\tF\tD\n");
+    fprintf(fp, "%.4e\t%.4e\t%.4e\t%.4e\t%.4e\t%.4e\t%.4e\n", b.dt, b.dT_out, b.m, b.friction, b.kT(), b.F, b.D());
+
+    std::vector<int>::iterator it_indices;
+    std::vector<histogram>::iterator it_h;
+    std::vector<int>::iterator it_f;
+
+    if (!x_h.empty())
+    {
+        fprintf(fp, "x\n");
+
+        it_h = x_h.begin();
+        for (it_indices = indices.begin(); it_indices != indices.end(); it_indices++)
+        {
+            fprintf(fp, "t\t%.3e\tsamples\t%i\txmin\t%.3e\tbin_w\t%.3e\n"
+              , (*it_indices)*(b.dT_out), (*it_h).constructor_samples, (*it_h).xmin, (*it_h).bin_width);
+            for (it_f = (*it_h).f.begin(); it_f != (*it_h).f.end(); it_f++)
+            { fprintf(fp, "%i\t", *it_f);}
+            fprintf(fp,"\n");
+            it_h++;
+        }
+    }
+    if (!v_h.empty())
+    {
+        fprintf(fp, "v\n");
+
+        it_h = v_h.begin();
+        for (it_indices = indices.begin(); it_indices != indices.end(); it_indices++)
+        {
+            fprintf(fp, "t\t%.3e\tsamples\t%i\txmin\t%.3e\tbin_w\t%.3e\n\t"
+              , (*it_indices)*(b.dT_out), (*it_h).constructor_samples, (*it_h).xmin, (*it_h).bin_width);
+            for (it_f = (*it_h).f.begin(); it_f != (*it_h).f.end(); it_f++)
+            { fprintf(fp, "%i\t", *it_f);}
+            fprintf(fp,"\n");
+            it_h++;
+        }
+    }
+    if (!x2_h.empty())
+    {}
+    if (!v2_h.empty())
+    {}
+    if (!xv_h.empty())
+    {}
     return;
 }
