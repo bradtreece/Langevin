@@ -131,12 +131,16 @@ public:
         {
             t = b.dT_out * (*it) + b.dt; // b.dt is to prevent xmin == xmax
             if ( e_x & s )
-            { x_h.push_back(histogram(-3.0*b.D()*t, 3.0*b.D()*t, 100)); }
-            if ( e_x2 & s ) {printf("\nx squared is not supported yet.\n");}
+            { x_h.push_back(histogram(-4.0*pow(2*b.D()*t,0.5), 4.0*pow(2*b.D()*t,0.5), 200)); }
+            if ( e_x2 & s )
+            { x2_h.push_back(histogram(-1.0*2*b.D()*t, 4.0*2*b.D()*t, 200)); }
             if ( e_v & s )
-            { v_h.push_back(histogram(-3.0*b.kT()/b.m, 3.0*b.kT()/b.m, 100)); }
-            if ( e_v2 & s ) {printf("\nv squared is not supported yet.\n");}
-            if ( e_xv & s ) {printf("\nxv is not supported yet.\n");}
+            { v_h.push_back(histogram(-4.0*pow(b.kT()/b.m,0.5), 4.0*pow(b.kT()/b.m,0.5), 200)); }
+            if ( e_v2 & s ) 
+            { v2_h.push_back(histogram(-1.0*b.kT()/b.m, 4.0*b.kT()/b.m, 200)); }
+            if ( e_xv & s )
+            { xv_h.push_back(histogram(-4.0*(pow(2*b.D()*t,0.5)+pow(b.kT()/b.m,0.5)),
+             4.0*(pow(2*b.D()*t,0.5)+pow(b.kT()/b.m,0.5)), 200)); }
         }
     }
 

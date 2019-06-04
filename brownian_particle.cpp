@@ -129,7 +129,15 @@ void brownian_histogram::add_samples(int number_of_samples, double variance_of_r
             }
         }
         if (!x2_h.empty())
-        {  }
+        {
+            it_h = x2_h.begin();
+            for (it_i = indices.begin(); it_i != indices.end(); it_i++)
+            {
+                (*it_h).increment_single_observation(b.x[*it_i]*b.x[*it_i]);
+                if ( (*it_h).bins > 1000 ) { (*it_h).triple_bin_width(); }
+                it_h++;
+            }
+        }
         if (!v_h.empty())
         {
             it_h = v_h.begin();
@@ -141,9 +149,25 @@ void brownian_histogram::add_samples(int number_of_samples, double variance_of_r
             }
         }
         if (!v2_h.empty())
-        {  }
+        {
+            it_h = v2_h.begin();
+            for (it_i = indices.begin(); it_i != indices.end(); it_i++)
+            {
+                (*it_h).increment_single_observation(b.v[*it_i]*b.v[*it_i]);
+                if ( (*it_h).bins > 1000 ) { (*it_h).triple_bin_width(); }
+                it_h++;
+            }
+        }
         if (!xv_h.empty())
-        {  }
+        {
+            it_h = xv_h.begin();
+            for (it_i = indices.begin(); it_i != indices.end(); it_i++)
+            {
+                (*it_h).increment_single_observation(b.x[*it_i]*b.v[*it_i]);
+                if ( (*it_h).bins > 1000 ) { (*it_h).triple_bin_width(); }
+                it_h++;
+            }
+        }
     }
     return;
 }
@@ -188,10 +212,49 @@ void brownian_histogram::print_data_to_file(FILE *fp)
         }
     }
     if (!x2_h.empty())
-    {}
+    {
+        fprintf(fp, "x2\n");
+
+        it_h = x2_h.begin();
+        for (it_indices = indices.begin(); it_indices != indices.end(); it_indices++)
+        {
+            fprintf(fp, "t\t%.3e\tsamples\t%i\txmin\t%.3e\tbin_w\t%.3e\n\t"
+              , (*it_indices)*(b.dT_out), (*it_h).constructor_samples, (*it_h).xmin, (*it_h).bin_width);
+            for (it_f = (*it_h).f.begin(); it_f != (*it_h).f.end(); it_f++)
+            { fprintf(fp, "%i\t", *it_f);}
+            fprintf(fp,"\n");
+            it_h++;
+        }
+}
     if (!v2_h.empty())
-    {}
+    {
+        fprintf(fp, "v2\n");
+
+        it_h = v2_h.begin();
+        for (it_indices = indices.begin(); it_indices != indices.end(); it_indices++)
+        {
+            fprintf(fp, "t\t%.3e\tsamples\t%i\txmin\t%.3e\tbin_w\t%.3e\n\t"
+              , (*it_indices)*(b.dT_out), (*it_h).constructor_samples, (*it_h).xmin, (*it_h).bin_width);
+            for (it_f = (*it_h).f.begin(); it_f != (*it_h).f.end(); it_f++)
+            { fprintf(fp, "%i\t", *it_f);}
+            fprintf(fp,"\n");
+            it_h++;
+        }
+}
     if (!xv_h.empty())
-    {}
+    {
+        fprintf(fp, "xv\n");
+
+        it_h = xv_h.begin();
+        for (it_indices = indices.begin(); it_indices != indices.end(); it_indices++)
+        {
+            fprintf(fp, "t\t%.3e\tsamples\t%i\txmin\t%.3e\tbin_w\t%.3e\n\t"
+              , (*it_indices)*(b.dT_out), (*it_h).constructor_samples, (*it_h).xmin, (*it_h).bin_width);
+            for (it_f = (*it_h).f.begin(); it_f != (*it_h).f.end(); it_f++)
+            { fprintf(fp, "%i\t", *it_f);}
+            fprintf(fp,"\n");
+            it_h++;
+        }
+}
     return;
 }
