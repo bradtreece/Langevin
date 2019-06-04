@@ -1,4 +1,5 @@
 #include "histogram.h"
+#include "External_Force_Functions.h"
 #include <vector>
 #include <math.h>
 #include <stdio.h>
@@ -24,15 +25,17 @@ public:
     double *x;
     double *v;
     double *f;
+    Force_External *force_ext;
 
     brownian_particle(int num_steps, double dt, double friction,
-    double kT, double m, double x0, double v0, double dT_output)
+    double kT, double m, double x0, double v0, double dT_output, Force_External *force)
     : num_steps{num_steps}
     , dt{dt}
     , friction{friction}
     , F{pow(2.0*kT*friction/dT_output, 0.5)}
     , m{m}
     , dT_out{dT_output}
+    , force_ext{force}
     {
         x = new double[num_steps];
         v = new double[num_steps];
@@ -49,7 +52,14 @@ public:
             dT_out = round(dT_output/dt)*dt;
             F = pow(2.0*kT*friction/dT_out, 0.5);
         }
+
     }
+
+
+    brownian_particle(int num_steps, double dt, double friction,
+    double kT, double m, double x0, double v0, double dT_output)
+    : brownian_particle(num_steps, dt, friction, kT, m, x0, v0
+    , dT_output, new Constant_Force()) {}
 
     brownian_particle(int num_steps, double dt, double friction,
     double kT, double m, double x0, double v0)

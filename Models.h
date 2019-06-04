@@ -7,6 +7,11 @@ public:
   {printf("No Call To This Model Was Defined.\n");};
 };
 
+class Constant_Model : public MODEL {
+public:
+  void model_call(double *t, double *x, int length, double *params);
+};
+
 class Linear_Model : public MODEL {
 public:
   void model_call(double *t, double *x, int length, double *params);

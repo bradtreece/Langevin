@@ -27,7 +27,7 @@ void brownian_particle::calculate_trajectory(double variance_of_r)
         Rand_Normal_Array(p, tau, nullptr, sigma);
         for (int j=0; j<tau; j++)
         {
-            atmp = ( -friction*vtmp + F*p[j] ) / m;
+            atmp = ( -friction*vtmp + F*p[j] + force_ext->force_calculation(xtmp) ) / m;
             //xtmp += vtmp*dt + 0.5*atmp*dt*dt;
 	        xtmp += vtmp*dt;
             vtmp += atmp*dt;
