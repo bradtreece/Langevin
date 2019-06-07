@@ -32,8 +32,8 @@ class Linear_Force : public Force_External {
   public:
     Linear_Force(double linear_coefficient, double constant_coefficient)
     : constant_coeff{constant_coefficient}
-    , linear_coeff{linear_coeff}
-    {}
+    , linear_coeff{linear_coefficient}
+    {printf("Force = %fx + %f\n", linear_coeff, constant_coeff);}
 
     Linear_Force(double linear_coefficient)
     : Linear_Force(linear_coefficient, 0.0) {}
@@ -43,6 +43,26 @@ class Linear_Force : public Force_External {
 
     double force_calculation (double x) override {
         return linear_coeff*x + constant_coeff;
+    };
+};
+
+class Cubic_Force : public Force_External {
+  private:
+    double constant_coeff;
+    double linear_coeff;
+    double quadratic_coeff;
+    double cubic_coeff;
+  public:
+    Cubic_Force(double cubic_coefficient, double quadratic_coefficient
+    , double linear_coefficient, double constant_coefficient)
+    : constant_coeff{constant_coefficient}
+    , linear_coeff{linear_coefficient}
+    , quadratic_coeff{quadratic_coefficient}
+    , cubic_coeff{cubic_coefficient}
+    {printf("Force = %fx^3 + %fx^2 + %fx + %f\n", cubic_coeff, quadratic_coeff, linear_coeff, constant_coeff);}
+
+    double force_calculation (double x) override {
+        return cubic_coeff*x*x*x + quadratic_coeff*x*x + linear_coeff*x + constant_coeff;
     };
 };
 
